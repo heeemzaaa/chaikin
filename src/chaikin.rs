@@ -1,4 +1,3 @@
-use macroquad::shapes::draw_line;
 use macroquad::prelude::*;
 
 pub fn chaikin(points: &mut Vec<(f32,f32)>, iterations: i32) -> Vec<(f32,f32)> {

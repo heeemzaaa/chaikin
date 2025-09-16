@@ -1,4 +1,4 @@
-use macroquad::prelude::*;
+use macroquad::{miniquad::window::request_quit, prelude::*};
 mod chaikin;
 
 use chaikin::*;
@@ -8,8 +8,9 @@ async fn main() {
     let mut points: Vec<(f32, f32)> = Vec::new();
     let mut temp_points: Vec<(f32, f32)> = Vec::new();
     let mut click_enter = false;
+    let mut error_points = false;    
     let mut index: i32 = 0;
-    let mut timer = 0;
+    let mut timer: i32 = 0;
 
     loop {
         clear_background(BLACK);
@@ -24,15 +25,28 @@ async fn main() {
         }
 
         if is_key_pressed(KeyCode::Enter) {
-            click_enter = true;
+            if points.len() < 3 {
+               error_points = true;
+            } else {
+                click_enter = true;
+            }
         }
 
-        if click_enter == true {
+        if is_key_pressed(KeyCode::Escape) {
+            request_quit();
+        }
+
+        if error_points == true {
+            draw_text("Please insert more than two points to see the results !", 20.,20., 20., RED);
+        }
+
+        if click_enter == true && points.len() > 2 {
+            error_points = false;
             if index > 6 {
                 index = 0;
                 continue;
             }
-            
+
             if timer >= 100 {
                 temp_points = chaikin(&mut points, index);
                 index += 1;
@@ -40,13 +54,19 @@ async fn main() {
             }
         }
 
-
-        for (i, (x,y)) in temp_points.iter().enumerate() {
+        for (i, (x, y)) in temp_points.iter().enumerate() {
             if temp_points.len() - 1 == i {
                 break;
             }
 
-            draw_line(*x, *y, temp_points[i+1].0, temp_points[i+1].1, 2., WHITE);
+            draw_line(
+                *x,
+                *y,
+                temp_points[i + 1].0,
+                temp_points[i + 1].1,
+                2.,
+                WHITE,
+            );
         }
         timer += 1;
 
