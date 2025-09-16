@@ -1,20 +1,27 @@
 use macroquad::shapes::draw_line;
-use macroquad::prelude::WHITE;
+use macroquad::prelude::*;
 
-pub fn chaikin(points: &mut Vec<(f32,f32)>) {
-        lines_drawing(points);
+pub fn chaikin(points: &mut Vec<(f32,f32)>, iterations: i32) -> Vec<(f32,f32)> {
+    let mut temp_points: Vec<(f32,f32)> = points.clone();
 
-        for i in 0..7 {
-            
+    for _ in 0..iterations {
+        let mut new_points = Vec::new();
+        new_points.push(temp_points[0]);
+
+        for i in 0..temp_points.len() - 1 {
+            let p0 = temp_points[i];
+            let p1 = temp_points[i + 1];
+
+            let q = (0.75 * p0.0 + 0.25 * p1.0, 0.75 * p0.1 + 0.25 * p1.1);
+            let r = (0.25 * p0.0 + 0.75 * p1.0, 0.25 * p0.1 + 0.75 * p1.1);
+
+            new_points.push(q);
+            new_points.push(r);
         }
-}
 
-pub fn lines_drawing(points:&mut Vec<(f32,f32)>) {
-    for( i, (x,y)) in points.iter().enumerate() {
-        if i == points.len() - 1 {
-            break;
-        }
-        draw_line(*x, *y, points[i+1].0, points[i+1].1, 1., WHITE);
+        new_points.push(temp_points[temp_points.len() - 1]);
+        temp_points = new_points;
     }
+    temp_points
 }
 
